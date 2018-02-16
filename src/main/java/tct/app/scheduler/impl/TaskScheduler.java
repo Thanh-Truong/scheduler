@@ -25,7 +25,7 @@ public class TaskScheduler implements Scheduler {
      * Set schedulerName to differentiate multiple schedulers.
      */
     private String schedulerName = "scheduler";
-/*  /**
+    /**
     * Executing tasks when they are due
     */
     private TaskExecutor taskExecutor;

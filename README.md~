@@ -9,7 +9,7 @@ Keywords
 - unit test
 - configurable
 
-Description
+What is this ?
 -------------------
 It is a simple distributed `Scheduler`, which can schedule `Task`(s) to be run at 
 their specified times. The ultimate goal is creating an extensible library to 

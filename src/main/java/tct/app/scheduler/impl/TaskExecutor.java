@@ -1,5 +1,6 @@
 package tct.app.scheduler.impl;
 
+import com.sun.net.httpserver.Authenticator;
 import static java.lang.Thread.sleep;
 import java.time.Clock;
 import java.util.Set;
@@ -20,7 +21,7 @@ public class TaskExecutor extends Thread {
 
     private static final Logger log = LoggerFactory.getLogger(TaskExecutor.class);
     private static final boolean SUCCESS = true;
-     private static final boolean FALURE = false;
+     private static final boolean FAILURE = false;
     
     /**
      * Indicator on/off of this TaskExecutor
@@ -86,7 +87,7 @@ public class TaskExecutor extends Thread {
     }
 
     /**
-     * When requested to unavailable, TaskExecutor becomes unavailable
+     * If called, TaskExecutor becomes unavailable.
      */
     public void makeUnavailable() {
         unavailable = true;
@@ -108,6 +109,11 @@ public class TaskExecutor extends Thread {
             }
         } catch (InterruptedException e) {
             logErrorWhileSchedulingTasks(e);
+        } catch (Exception e) {
+            /*TODO
+              Option 1 : Do not catch any exception and let it crashes
+              Option 2 : Log and retries ??
+            */
         }
 
         if (exceedsMaxRetries()) {
@@ -123,10 +129,10 @@ public class TaskExecutor extends Thread {
         boolean executionSuccess = (redisOps.exec() != null);
 
         if (executionSuccess) {
-            tryTaskExecution(task);
+            this.task.run(task);
             return SUCCESS;
         }
-        return FALURE;
+        return FAILURE;
     }
 
     @SuppressWarnings("unchecked")
@@ -144,7 +150,7 @@ public class TaskExecutor extends Thread {
                     return executeTask(redisOps, taskId);
                 } 
                 redisOps.unwatch();
-                return FALURE;
+                return FAILURE;
             }
         });
     }
@@ -178,22 +184,12 @@ public class TaskExecutor extends Thread {
         return null;
     }
 
-    private void tryTaskExecution(String task) {
-        try {
-            this.task.run(task);
-        } catch (Exception e) {
-            logErrorWhileExecutionOfTask(task, e);
-        }
-    }
-
     private void findAndExecuteTaskPeriodcally() throws InterruptedException {
         try {
-            boolean taskTriggered = findAndExecuteTask();
-
-            // Sleeping timeout for the next polling
-            if (!taskTriggered) {
-                sleep(delayMillis);
-            }
+            findAndExecuteTask();
+            // Sleep until the next database lookup
+            sleep(delayMillis);
+            
             numRetries = 0;
         } catch (RedisConnectionFailureException e) {
             numRetries++;
