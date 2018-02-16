@@ -1,6 +1,5 @@
 package tct.app.scheduler.impl;
 
-import com.sun.net.httpserver.Authenticator;
 import static java.lang.Thread.sleep;
 import java.time.Clock;
 import java.util.Set;
@@ -217,8 +216,4 @@ public class TaskExecutor extends Thread {
                 schedulerName));
     }
 
-    private void logErrorWhileExecutionOfTask(String task, Exception e) {
-        log.error(String.format("[%s] Error during execution of task [%s]",
-                schedulerName, task), e);
-    }
 }
