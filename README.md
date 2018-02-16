@@ -14,6 +14,7 @@ What is this ?
 It is a simple distributed `Scheduler`, which can schedule `Task`(s) to be run at 
 their specified times. The ultimate goal is creating an extensible library to 
 build a configurable network of tasks /jobs running in distributed environment.
+This is a very first step towards that goal.
 
 `Scheduler` and `Task` are identified by globally 
 unique string identifiers. Several instances of Scheduler(s) can run and 
@@ -26,7 +27,7 @@ in key-value fashion. The centralized database helps to prevent a single unique
 task to be executed by another instance of the Scheduler.
 
 
-Highlighted frameworks
+Highlighted technologies
 -------------------
 - Database:             embedded-redis
 - Database connection:  org.springframework
@@ -46,9 +47,8 @@ Abstract interface of a task
 It is responsible for scheduling / un-scheduling tasks by writing to database:
 taskId and its expected time to run.
 
-#### `TaskScheduler`
-A helper class that periodically looks up from the database for the first 
-next due task and executes it. 
+#### `TaskExecutor`
+A helper class that periodically finds the first next due task and executes it. 
 
 It can be stopped if there is explicitly request to stop. When error occurred,
 the application needs to be restart. Thus, it exposes room for improvement.
@@ -82,7 +82,8 @@ For examples:
 
 ``` xml
      <bean id="taskExecutor" class="tct.app.scheduler.impl.TaskExecutor">
-        <property name="delayMillis" value="50"/>
+     	<!-- Delay between two database look-ups -->   
+        <property name="delayMillis" value="100"/>
         ..
        <property name="database" ref="databaseConnection"/>
         <property name="task" ref="task"/>
