@@ -52,10 +52,9 @@ public class TaskExecutor extends Thread {
      */
     private Task task;
     /**
-     * Delay between each polling of the scheduled tasks. Thus, no actual on
-     * time of executing task.
+     * Delay between two database lookups to find due task to execute
      */
-    private int delayMillis = 70;
+    private int delay = 70;
 
     public TaskExecutor() {
         this.unavailable = false;
@@ -65,8 +64,8 @@ public class TaskExecutor extends Thread {
         this.clock = clock;
     }
 
-    public void setDelayMillis(int delayMillis) {
-        this.delayMillis = delayMillis;
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 
     public void setTask(Task task) {
@@ -187,7 +186,7 @@ public class TaskExecutor extends Thread {
         try {
             findAndExecuteTask();
             // Sleep until the next database lookup
-            sleep(delayMillis);
+            sleep(delay);
             
             numRetries = 0;
         } catch (RedisConnectionFailureException e) {

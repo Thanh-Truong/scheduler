@@ -82,8 +82,8 @@ For examples:
 
 ``` xml
      <bean id="taskExecutor" class="tct.app.scheduler.impl.TaskExecutor">
-     	<!-- Delay between two database look-ups -->   
-        <property name="delayMillis" value="100"/>
+     	<!-- Delay between two database look-ups to find due task to execute-->   
+        <property name="delayLookup" value="100"/>
         ..
        <property name="database" ref="databaseConnection"/>
         <property name="task" ref="task"/>

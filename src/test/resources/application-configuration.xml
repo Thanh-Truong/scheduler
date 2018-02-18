@@ -23,7 +23,7 @@
     <bean id="clock" class="tct.app.scheduler.impl.SimpleClock" />
 
      <bean id="taskExecutor" class="tct.app.scheduler.impl.TaskExecutor">
-        <property name="delayMillis" value="50"/>
+        <property name="delay" value="50"/>
         <property name="clock" ref="clock"/>
         <property name="database" ref="databaseConnection"/>
         <property name="task" ref="task"/>
